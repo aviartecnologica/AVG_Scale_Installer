@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="colorAccent">#E0603E</color>
+  <color name="colorAccentDark">#AD4A2F</color>
+  <color name="secondaryText">#72767D</color>
+  <color name="lighter">#40444B</color>
+  <color name="light">#36393F</color>
+  <color name="dark">#2F3136</color>
+  <color name="darker">#202225</color>
+  <color name="white">#ffffff</color>
+  <color name="errorBackground">#e68383</color>
+  <color name="errorText">#9c2828</color>
+</resources>

@@ -1,0 +1,10 @@
+<resources>
+  <string name="app_name">KeyChain</string>
+  <string name="user_hint">User</string>
+  <string name="password_hint">Password</string>
+  <string name="server_hint">Server</string>
+  <string name="login_enter_button">LOG IN</string>
+  <string name="login_invalid_credentials">INVALID CREDENTIALS</string>
+  <string name="login_error">It looks like there was an error signing in to the application</string>
+  <string name="logout">Log out</string>
+</resources>

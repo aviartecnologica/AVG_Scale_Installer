@@ -1,0 +1,10 @@
+﻿<resources>
+  <string name="app_name">KeyChain</string>
+  <string name="user_hint">Usuario</string>
+  <string name="password_hint">Contraseña</string>
+  <string name="server_hint">Servidor</string>
+  <string name="login_enter_button">Iniciar sesión</string>
+  <string name="login_invalid_credentials">CREDENCIALES INCORRECTAS</string>
+  <string name="login_error">Parece que ha habido un error al iniciar sesión en la aplicación</string>
+  <string name="logout">Cerrar sesión</string>
+</resources>
