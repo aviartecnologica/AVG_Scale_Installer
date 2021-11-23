@@ -7,6 +7,7 @@ using Android.Util;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
+using AVG_access_data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,7 +92,17 @@ namespace AVG_Scale_Installer
 
             try
             {
-                
+                LoginResponse loginResponse = await RequestAPI.DoAPIAuthentication(UserInput.Text, PasswordInput.Text);
+
+                if (loginResponse.success)
+                {
+                    EPerson person = await RequestAPI.GetPerson((int)loginResponse.id, loginResponse.token);
+
+                    if(person != null)
+                    {
+                        completed = true;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -106,7 +117,7 @@ namespace AVG_Scale_Installer
 
                 await Task.Delay(2000);
 
-                //Activity.StartActivity(new Intent(Activity, typeof(MainActivity)));
+                Activity.StartActivity(new Intent(Activity, typeof(MainActivity)));
 
             }
             else

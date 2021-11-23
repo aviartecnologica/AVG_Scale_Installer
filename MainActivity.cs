@@ -1,25 +1,23 @@
 ﻿using Android.App;
 using Android.OS;
 using Android.Runtime;
-using AndroidX.AppCompat.App;
+using Android.Support.V7.App;
+using Android.Support.V7.Widget;
 
 namespace AVG_Scale_Installer
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
+    [Activity(Theme = "@style/AppTheme", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, ConfigurationChanges = Android.Content.PM.ConfigChanges.Orientation | Android.Content.PM.ConfigChanges.KeyboardHidden)]
     public class MainActivity : AppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            // Set our view from the "main" layout resource
-            SetContentView(Resource.Layout.activity_main);
-        }
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
-        {
-            Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            SetContentView(Resource.Layout.MainActivity);
 
-            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            Toolbar mToolbar = FindViewById<Toolbar>(Resource.Id.MainActivityToolbar);
+            SetSupportActionBar(mToolbar);
+
+            SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, new CenterSelection(), "CenterSelection").Commit();
         }
     }
 }
