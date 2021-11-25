@@ -21,11 +21,12 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="300dp"
+                android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
+                android:src="@drawable/logo_final"
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/LogInLogo"
             />
@@ -85,24 +86,6 @@
                 android:id="@+id/LogInInvalidCredentialsText"
                 android:visibility="gone"
             />
-
-            <RadioGroup
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                    android:enabled="true"
-                    android:checked="true"
-                android:text="Bascula"/>
-                <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BlackBox"
-                />
-            </RadioGroup>
-            
 
         </LinearLayout>
 

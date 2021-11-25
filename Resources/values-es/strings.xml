@@ -1,10 +1,22 @@
 ﻿<resources>
-  <string name="app_name">KeyChain</string>
+  <string name="app_name">BSetup</string>
   <string name="user_hint">Usuario</string>
   <string name="password_hint">Contraseña</string>
   <string name="server_hint">Servidor</string>
   <string name="login_enter_button">Iniciar sesión</string>
   <string name="login_invalid_credentials">CREDENCIALES INCORRECTAS</string>
   <string name="login_error">Parece que ha habido un error al iniciar sesión en la aplicación</string>
-  <string name="logout">Cerrar sesión</string>
+  <string name="logout">Desconectar</string>
+  <string name="scales">Básculas</string>
+  <string name="blackbox">BlackBox</string>
+  <string name="add_scale">Añadir báscula</string>
+  <string name="no_data">Sin datos</string>
+  <string name="continue_button">Continuar</string>
+  <string name="config_mode_info">Asegúrese de que el led de la báscula esté parpadeando de color rojo antes de continuar. En caso contrario mantenga el botón presionado durante 7 segundos hasta que comience a parpadear.</string>
+  <string name="scan_qr">Escanear QR</string>
+  <string name="server_info">Introduzca la dirección del servidor o escanee el QR ubicado en la Raspberry PI.</string>
+  <string name="server_error">Hay algún problema con el servidor, o la dirección es incorrecta.</string>
+  <string name="select_scale">Seleccione la báscula que desea añadir:</string>
+  <string name="identify">Identificar báscula</string>
+  <string name="wifi_disabled">El WiFi está deshabilitado</string>
 </resources>

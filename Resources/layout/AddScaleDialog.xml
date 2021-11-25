@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="@color/dark"
+    android:clickable="true"
+    android:id="@+id/AddScaleDialogLayout"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="false">
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            app:titleTextColor="@color/white"
+            android:id="@+id/AddScaleDialogToolbar"
+        />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:id="@+id/AddScaleDialogConfigMode">
+
+            <android.webkit.WebView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="16dp"
+                android:id="@+id/AddScaleDialogConfigModeInfoText"
+            />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+            />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginVertical="16dp"
+                android:background="@drawable/button"
+                android:textColor="@color/white"
+                android:text="@string/continue_button"
+                android:id="@+id/AddScaleDialogConfigModeContinueButton"
+            />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:id="@+id/AddScaleDialogWifiSelection">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_marginVertical="16dp"
+                android:text="@string/select_scale"
+            />
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/AddScaleDialogWifiSwipeContainer">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/AddScaleDialogWifiRecycler"
+                />
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:id="@+id/AddScaleDialogWifiEmptySwipeContainer">
+                
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_data"
+                        android:layout_gravity="center_horizontal"
+                        android:textStyle="italic"
+                        android:layout_marginVertical="16dp"
+                    />
+
+                </ScrollView>
+
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginVertical="16dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/button"
+                android:textColor="@color/white"
+                android:text="@string/identify"
+                android:paddingHorizontal="16dp"
+                android:enabled="false"
+                android:id="@+id/AddScaleDialogWifiIdentifyButton"
+            />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginVertical="16dp"
+                android:background="@drawable/button"
+                android:textColor="@color/white"
+                android:text="@string/continue_button"
+                android:enabled="false"
+                android:id="@+id/AddScaleDialogWifiContinueButton"
+            />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

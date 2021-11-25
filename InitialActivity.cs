@@ -22,7 +22,7 @@ namespace AVG_Scale_Installer
 
             SetContentView(Resource.Layout.InitialActivity);
 
-            SupportFragmentManager.BeginTransaction().Add(Resource.Id.InitialActivityFrameLayout, new LogIn(), "LogIn").Commit();
+            SupportFragmentManager.BeginTransaction().Add(Resource.Id.InitialActivityFrameLayout, new ServerSetup(), "ServerSetup").Commit();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

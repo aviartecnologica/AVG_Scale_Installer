@@ -8,6 +8,7 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using AVG_access_data;
+using AVG_Scale_Installer.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,14 +49,9 @@ namespace AVG_Scale_Installer
 
             view.FindViewById<LinearLayout>(Resource.Id.LogInLayout).Touch += delegate
             {
-                try
-                {
-                    InputMethodManager inm = (InputMethodManager)Activity.GetSystemService(Context.InputMethodService);
-                    inm.HideSoftInputFromWindow(Activity.CurrentFocus.WindowToken, HideSoftInputFlags.NotAlways);
-                    UserInput.ClearFocus();
-                    PasswordInput.ClearFocus();
-                }
-                catch (Exception) { }
+                Functions.HideKeyboard(Activity);
+                UserInput.ClearFocus();
+                PasswordInput.ClearFocus();
             };
 
             EnterButton.Click += TryLogin;
@@ -74,14 +70,9 @@ namespace AVG_Scale_Installer
         {
             bool completed = false;
 
-            try
-            {
-                InputMethodManager inm = (InputMethodManager)Activity.GetSystemService(Context.InputMethodService);
-                inm.HideSoftInputFromWindow(Activity.CurrentFocus.WindowToken, HideSoftInputFlags.NotAlways);
-                UserInput.ClearFocus();
-                PasswordInput.ClearFocus();
-            }
-            catch (Exception) { }
+            Functions.HideKeyboard(Activity);
+            UserInput.ClearFocus();
+            PasswordInput.ClearFocus();
 
             EnterButton.Enabled = false;
             InvalidCredentials.Visibility = ViewStates.Gone;
