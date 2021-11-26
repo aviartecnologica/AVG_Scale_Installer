@@ -7,17 +7,18 @@ using Android.Net.Wifi;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V4.App;
-using Android.Support.V4.Widget;
 using Android.Util;
 using Android.Views;
 using Android.Webkit;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using AndroidX.SwipeRefreshLayout.Widget;
 using AVG_Scale_Installer.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace AVG_Scale_Installer
@@ -75,22 +76,35 @@ namespace AVG_Scale_Installer
             WifiIdentify = view.FindViewById<Button>(Resource.Id.AddScaleDialogWifiIdentifyButton);
             WifiContinue = view.FindViewById<Button>(Resource.Id.AddScaleDialogWifiContinueButton);
             WifiRecycler.SetLayoutManager(new LinearLayoutManager(Context));
+            WifiSwipe.SetProgressBackgroundColorSchemeResource(Resource.Color.lighter);
+            WifiEmptySwipe.SetProgressBackgroundColorSchemeResource(Resource.Color.lighter);
+            WifiSwipe.SetColorSchemeResources(Resource.Color.colorAccent);
+            WifiEmptySwipe.SetColorSchemeResources(Resource.Color.colorAccent);
+            WifiSwipe.Refresh += Swipe_Refresh;
+            WifiEmptySwipe.Refresh += Swipe_Refresh;
+            WifiIdentify.Click += WifiIdentify_Click;
+            WifiContinue.Click += WifiContinue_Click;
 
+            //Pantalla seleccionar nave
+
+
+            //Workflow
             view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogLayout).Touch += delegate
             {
                 Functions.HideKeyboard(Activity);
             };
 
-
-
             return view;
         }
+
+
+        #region Workflow
 
         public override void OnResume()
         {
             base.OnResume();
 
-            ReceiverWifi = new WifiMonitor(myWifiManager, WifiRecycler, WifiSwipe, WifiEmptySwipe);
+            ReceiverWifi = new WifiMonitor(myWifiManager, WifiRecycler, WifiSwipe, WifiEmptySwipe, NotifyNetworkSelection);
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.AddAction(WifiManager.ScanResultsAvailableAction);
             Context.RegisterReceiver(ReceiverWifi, intentFilter);
@@ -118,20 +132,70 @@ namespace AVG_Scale_Installer
             }
         }
 
+        #endregion
+
+        #region Config
+
         private void ConfigModeContinue_Click(object sender, EventArgs e)
         {
             myWifiManager.StartScan();
-            WifiSwipe.Visibility = ViewStates.Gone;
+            WifiSwipe.Refreshing = true;
+            WifiEmptySwipe.Refreshing = true;
+            WifiSwipe.Visibility = ViewStates.Visible;
             WifiEmptySwipe.Visibility = ViewStates.Gone;
 
             ConfigModeLayout.Visibility = ViewStates.Gone;
             WifiSelectionLayout.Visibility = ViewStates.Visible;
         }
 
-        public void Network_Selection(object sender, int pos)
+        #endregion
+
+        #region Wifi
+
+        public void NotifyNetworkSelection()
+        {
+            if(Data.SelectedNetwork != null)
+            {
+                WifiIdentify.Enabled = true;
+                WifiContinue.Enabled = true;
+            }
+            else
+            {
+                WifiIdentify.Enabled = false;
+                WifiContinue.Enabled = false;
+            }
+        }
+
+        private void Swipe_Refresh(object sender, EventArgs e)
+        {
+            myWifiManager.StartScan();
+        }
+
+        private async void WifiIdentify_Click(object sender, EventArgs e)
+        {
+            Functions.ForceWifiOverCellular(Context);
+            WifiIdentify.Enabled = false;
+            WifiContinue.Enabled = false;
+            var connected = false;
+            await Task.Run(async () =>
+            {
+                Functions.Loading(true);
+
+                //Wifi del centro (Original)
+                var centerWifi = myWifiManager.ConnectionInfo;
+
+
+            });
+        }
+
+        private void WifiContinue_Click(object sender, EventArgs e)
         {
 
         }
+
+        
+
+        #endregion
 
     }
 }

@@ -5895,13 +5895,22 @@ namespace AVG_Scale_Installer
 			public const int qr = 2131165335;
 			
 			// aapt resource value: 0x7F070098
-			public const int test_custom_background = 2131165336;
+			public const int selection_band_overlay = 2131165336;
 			
 			// aapt resource value: 0x7F070099
-			public const int tooltip_frame_dark = 2131165337;
+			public const int selection_item = 2131165337;
 			
 			// aapt resource value: 0x7F07009A
-			public const int tooltip_frame_light = 2131165338;
+			public const int selection_item_selected = 2131165338;
+			
+			// aapt resource value: 0x7F07009B
+			public const int test_custom_background = 2131165339;
+			
+			// aapt resource value: 0x7F07009C
+			public const int tooltip_frame_dark = 2131165340;
+			
+			// aapt resource value: 0x7F07009D
+			public const int tooltip_frame_light = 2131165341;
 			
 			static Drawable()
 			{

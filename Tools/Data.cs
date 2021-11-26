@@ -16,7 +16,7 @@ namespace AVG_Scale_Installer.Tools
     {
         public static Android.Support.V4.App.FragmentManager CurrentFM;
 
-        public static string WifiFilter = "";
+        public static string WifiFilter = "iPhone";
 
         public static Network SelectedNetwork;
     }

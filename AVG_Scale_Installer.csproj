@@ -73,13 +73,14 @@
     <Compile Include="LoginResponse.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="RequestAPI.cs" />
-    <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScalesMain.cs" />
     <Compile Include="ServerSetup.cs" />
     <Compile Include="Tools\Data.cs" />
     <Compile Include="Tools\Functions.cs" />
     <Compile Include="Tools\WifiMonitor.cs" />
+    <Compile Include="Resources\Resource.designer.cs" />
+    <Compile Include="NetworkAvailableCallback.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -91,6 +92,14 @@
     <AndroidResource Include="Resources\values\ic_launcher_background.xml" />
     <AndroidResource Include="Resources\values\strings.xml" />
     <AndroidResource Include="Resources\values\styles.xml" />
+    <AndroidResource Include="Resources\drawable\selection_item.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\selection_item_selected.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\InitialActivity.xml">

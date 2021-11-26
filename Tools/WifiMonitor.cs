@@ -3,10 +3,10 @@ using Android.Content;
 using Android.Net.Wifi;
 using Android.OS;
 using Android.Runtime;
-using Android.Support.V4.Widget;
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using AndroidX.SwipeRefreshLayout.Widget;
 using AVG_Scale_Installer.Adapters;
 using System;
 using System.Collections.Generic;
@@ -21,13 +21,16 @@ namespace AVG_Scale_Installer.Tools
         private RecyclerView WifiRecycler;
         private SwipeRefreshLayout WifiSwipe;
         private SwipeRefreshLayout EmptySwipe;
+        private Action Notify;
 
-        public WifiMonitor(WifiManager wifiManager, RecyclerView wifiRecycler, SwipeRefreshLayout wifiSwipe, SwipeRefreshLayout emptySwipe)
+
+        public WifiMonitor(WifiManager wifiManager, RecyclerView wifiRecycler, SwipeRefreshLayout wifiSwipe, SwipeRefreshLayout emptySwipe, Action notifyNetworkSelection)
         {
             myWifiManager = wifiManager;
             WifiRecycler = wifiRecycler;
             WifiSwipe = wifiSwipe;
             EmptySwipe = emptySwipe;
+            Notify = notifyNetworkSelection;
         }
 
         public override void OnReceive(Context context, Intent intent)
@@ -36,6 +39,7 @@ namespace AVG_Scale_Installer.Tools
             if (WifiManager.ScanResultsAvailableAction.Equals(action))
             {
                 var networks = new List<Network>(myWifiManager.ScanResults.Select(x => new Network(x, false)));
+                networks = networks.Where(x => x.ScanResult.Ssid.StartsWith(Data.WifiFilter)).ToList();
                 var adapter = new WifisAdapter(networks);
                 adapter.ItemClick += (s, pos) =>
                 {
@@ -68,18 +72,22 @@ namespace AVG_Scale_Installer.Tools
                             adapter.NotifyItemChanged(pos);
                         }
                     }
+                    Notify.Invoke();
+
                 };
                 WifiRecycler.SetAdapter(adapter);
 
-                if(networks.Where(x => x.ScanResult.Ssid.StartsWith(Data.WifiFilter)).ToList().Count == 0)
+                if(networks.Count == 0)
                 {
                     EmptySwipe.Visibility = ViewStates.Visible;
                     WifiSwipe.Visibility = ViewStates.Gone;
+                    EmptySwipe.Refreshing = false;
                 }
                 else
                 {
                     EmptySwipe.Visibility = ViewStates.Gone;
                     WifiSwipe.Visibility = ViewStates.Visible;
+                    WifiSwipe.Refreshing = false;
                 }
             }
         }

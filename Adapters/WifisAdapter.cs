@@ -16,7 +16,7 @@ namespace AVG_Scale_Installer.Adapters
 
         public WifisAdapter(IList<Network> data)
         {
-            items = data.Where(x => x.ScanResult.Ssid.StartsWith(Data.WifiFilter)).ToList();
+            items = data;
         }
 
         public override long GetItemId(int position)
@@ -39,11 +39,11 @@ namespace AVG_Scale_Installer.Adapters
 
             if (items[position].Selected)
             {
-                item.Parent.SetBackgroundResource(Resource.Drawable.list_item_selected);
+                item.Parent.SetBackgroundResource(Resource.Drawable.selection_item_selected);
             }
             else
             {
-                item.Parent.SetBackgroundResource(Resource.Drawable.list_item);
+                item.Parent.SetBackgroundResource(Resource.Drawable.selection_item);
             }
             item.Name.Text = items[position].ScanResult.Ssid;
         }

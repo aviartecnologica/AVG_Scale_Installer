@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Net;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V4.App;
@@ -24,7 +25,7 @@ namespace AVG_Scale_Installer.Tools
                 InputMethodManager inm = (InputMethodManager)activity.GetSystemService(Context.InputMethodService);
                 inm.HideSoftInputFromWindow(activity.CurrentFocus.WindowToken, HideSoftInputFlags.NotAlways);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -34,12 +35,12 @@ namespace AVG_Scale_Installer.Tools
         {
             try
             {
-                if(!open && LoadingOpened)
+                if (!open && LoadingOpened)
                 {
                     LoadingOpened = false;
                     ((Android.Support.V4.App.DialogFragment)Data.CurrentFM.FindFragmentByTag("waiting")).Dismiss();
                 }
-                if(open && !LoadingOpened)
+                if (open && !LoadingOpened)
                 {
                     DoingWork connection = new DoingWork();
                     connection.Cancelable = false;
@@ -47,10 +48,29 @@ namespace AVG_Scale_Installer.Tools
                     LoadingOpened = true;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                
+
             }
+        }
+
+        public static void ForceWifiOverCellular(Context context)
+        {
+            ConnectivityManager ConnManager = (ConnectivityManager)context.GetSystemService(Context.ConnectivityService);
+            NetworkRequest.Builder request = new NetworkRequest.Builder();
+            request.AddTransportType(TransportType.Wifi);
+
+            var callback = new ConnectivityManager.NetworkCallback();
+            ConnManager.RegisterNetworkCallback(request.Build(), new NetworkAvailableCallback(context));
+        }
+
+        public static void ForceCellularOverWifi(Context context)
+        {
+            ConnectivityManager ConnManager = (ConnectivityManager)context.GetSystemService(Context.ConnectivityService);
+            NetworkRequest.Builder request = new NetworkRequest.Builder();
+            request.AddTransportType(TransportType.Cellular);
+
+            ConnManager.RegisterNetworkCallback(request.Build(), new NetworkAvailableCallback(context));
         }
     }
 }
