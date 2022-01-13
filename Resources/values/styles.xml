@@ -36,6 +36,15 @@
     <item name="bottomSheetDialogTheme">@style/BottomSheetTheme</item>
   </style>
 
+    <style name="AppTheme.FullScreenDialog" parent="Theme.MaterialComponents.Light.Dialog">
+        <item name="colorPrimaryDark">@color/darker</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/dark</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@color/dark</item>
+        <item name="actionMenuTextColor">@color/white</item>
+    </style>
+
   <style name="BottomSheetTheme" parent="Theme.Design.Light.BottomSheetDialog">
     <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
     <item name="colorControlNormal">@color/colorAccent</item>

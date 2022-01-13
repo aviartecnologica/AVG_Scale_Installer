@@ -3,10 +3,10 @@ using Android.Content;
 using Android.Net;
 using Android.OS;
 using Android.Runtime;
-using Android.Support.V4.App;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
+using AndroidX.Fragment.App;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +38,7 @@ namespace AVG_Scale_Installer.Tools
                 if (!open && LoadingOpened)
                 {
                     LoadingOpened = false;
-                    ((Android.Support.V4.App.DialogFragment)Data.CurrentFM.FindFragmentByTag("waiting")).Dismiss();
+                    ((AndroidX.Fragment.App.DialogFragment)Data.CurrentFM.FindFragmentByTag("waiting")).Dismiss();
                 }
                 if (open && !LoadingOpened)
                 {

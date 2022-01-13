@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <Button
         android:layout_width="match_parent"
@@ -11,31 +12,28 @@
         android:layout_marginVertical="24dp"
         android:background="@drawable/button"
         android:textColor="@color/white"
-        android:text="@string/add_scale"
-        android:id="@+id/ScalesMainAddButton"
+        android:text="@string/add_blackbox"
+        android:id="@+id/BlackboxMainAddButton"
     />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:id="@+id/ScalesMainSwipe">
+        android:layout_height="match_parent"
+        android:id="@+id/BlackboxMainSwipe">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/ScalesMainHouseRecycler"
+            android:id="@+id/BlackboxMainRecycler"
         />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:visibility="gone"
-        android:id="@+id/ScalesMainEmptySwipe">
-                
+        android:layout_height="match_parent"
+        android:id="@+id/BlackboxMainEmptySwipe">
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -69,18 +69,28 @@
     <Compile Include="DoingWork.cs" />
     <Compile Include="Home.cs" />
     <Compile Include="InitialActivity.cs" />
-    <Compile Include="LogIn.cs" />
     <Compile Include="LoginResponse.cs" />
-    <Compile Include="MainActivity.cs" />
     <Compile Include="RequestAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScalesMain.cs" />
     <Compile Include="ServerSetup.cs" />
     <Compile Include="Tools\Data.cs" />
     <Compile Include="Tools\Functions.cs" />
-    <Compile Include="Tools\WifiMonitor.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="NetworkAvailableCallback.cs" />
+    <Compile Include="Tools\WifiReceiver.cs" />
+    <Compile Include="Adapters\RoomsAdapter.cs" />
+    <Compile Include="Adapters\LittersAdapter.cs" />
+    <Compile Include="BlackBoxMain.cs" />
+    <Compile Include="AddBlackboxDialog.cs" />
+    <Compile Include="MainActivity.cs" />
+    <Compile Include="Adapters\HousesAdapter.cs" />
+    <Compile Include="LitterSelection.cs" />
+    <Compile Include="Adapters\CurrentLitterAdapter.cs" />
+    <Compile Include="ScaleSelection.cs" />
+    <Compile Include="Adapters\ScalesAdapter.cs" />
+    <Compile Include="BlackBoxSelection.cs" />
+    <Compile Include="Adapters\BlackBoxesAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -97,6 +107,51 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\selection_item_selected.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\ItemPlaceholder.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable-xhdpi\finished.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable-xxhdpi\finished.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable-hdpi\finished.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable-mdpi\finished.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable-xxxhdpi\finished.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddScaleDialog.xml" />
+    <AndroidResource Include="Resources\layout\BlackboxMain.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddBlackboxDialog.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\LitterSelection.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\ScaleSelection.xml">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\BlackboxSelection.xml">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>
@@ -170,6 +225,12 @@
     </PackageReference>
     <PackageReference Include="Xamarin.Google.Android.Material" Version="1.4.0.4" />
     <PackageReference Include="Xamarin.Essentials" Version="1.7.0" />
+    <PackageReference Include="Xamarin.AdvancedRecyclerView">
+      <Version>0.9.4</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Google.MLKit.BarcodeScanning">
+      <Version>116.1.2.3</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values-es\strings.xml" />
@@ -217,11 +278,6 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\ScalesMain.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddScaleDialog.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

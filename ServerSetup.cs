@@ -3,11 +3,11 @@ using Android.Graphics;
 using Android.OS;
 using Android.Preferences;
 using Android.Runtime;
-using Android.Support.V4.App;
 using Android.Util;
 using Android.Views;
 using Android.Webkit;
 using Android.Widget;
+using AndroidX.Fragment.App;
 using AVG_Scale_Installer.Tools;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Google.MLKit.Vision.BarCode;
 
 namespace AVG_Scale_Installer
 {
@@ -93,7 +94,6 @@ namespace AVG_Scale_Installer
             if(Prefs.GetString("server", "") != "")
             {
                 Logos.Visibility = ViewStates.Visible;
-                await Task.Delay(2000);
                 Activity.StartActivity(new Intent(Activity, typeof(MainActivity)));
             }
             else
@@ -110,6 +110,9 @@ namespace AVG_Scale_Installer
         private void ScanButton_Click(object sender, EventArgs e)
         {
             Toast.MakeText(Context, "Work in progress", ToastLength.Short).Show();
+
+            BarcodeScannerOptions options = new BarcodeScannerOptions.Builder()
+                .SetBarcodeFormats(Barcode.FormatQrCode).Build();
         }
 
         private async void ContinueButton_Click(object sender, EventArgs e)
@@ -128,7 +131,6 @@ namespace AVG_Scale_Installer
                     Parent.Visibility = ViewStates.Gone;
                     await Task.Run(() => Functions.Loading(false));
                     Logos.Visibility = ViewStates.Visible;
-                    await Task.Delay(2000);
                     Activity.StartActivity(new Intent(Activity, typeof(MainActivity)));
                     
                 }

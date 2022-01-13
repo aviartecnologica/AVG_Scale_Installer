@@ -2,10 +2,10 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
-using Android.Support.V4.App;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Fragment.App;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,13 +42,14 @@ namespace AVG_Scale_Installer
         private void ScalesButton_Click(object sender, EventArgs e)
         {
             ScalesMain scales = new ScalesMain();
-            Activity.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, scales, "ScalesMain").AddToBackStack("ScalesMain").Commit();
+            Activity.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, scales, "ScalesMain").AddToBackStack(null).Commit();
 
         }
 
         private void BlackBoxButton_Click(object sender, EventArgs e)
         {
-            //Seccion blackbox
+            BlackBoxMain blackboxes = new BlackBoxMain();
+            Activity.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, blackboxes, "BlackboxMain").AddToBackStack(null).Commit();
         }
     }
 }

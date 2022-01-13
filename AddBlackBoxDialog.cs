@@ -1,4 +1,8 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Android;
 using Android.Content;
 using Android.Content.PM;
@@ -19,19 +23,14 @@ using AndroidX.SwipeRefreshLayout.Widget;
 using AVG_access_data;
 using AVG_Scale_Installer.Adapters;
 using AVG_Scale_Installer.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace AVG_Scale_Installer
 {
-    public class AddScaleDialog : DialogFragment
+    public class AddBlackBoxDialog : DialogFragment
     {
+        private List<ERoom> RoomsList;
+        private WifiManager myWifiManager;
         private LinearLayout ConfigModeLayout;
         private WebView ConfigModeInfo;
         private Button ConfigModeContinue;
@@ -41,38 +40,26 @@ namespace AVG_Scale_Installer
         private SwipeRefreshLayout WifiEmptySwipe;
         private Button WifiIdentify;
         private Button WifiContinue;
-        private WifiManager myWifiManager;
-        private WifiReceiver myWifiReceiver;
         private WifiNetwork SelectedNetwork;
         private LinearLayout RoomSelectionLayout;
         private SwipeRefreshLayout RoomSwipe;
         private RecyclerView RoomRecycler;
         private SwipeRefreshLayout RoomEmptySwipe;
         private Button RoomContinue;
-        private List<Department> Departments;
-        private LittersAdapter LitterAdapter;
-        private List<Room> Houses;
+        private Room SelectedRoom;
+        private LinearLayout NameSelectionLayout;
+        private EditText NameInput;
+        private Button NameContinue;
+        private LinearLayout FinishLayout;
+        private Button FinishButton;
+        private WifiReceiver myWifiReceiver;
         private List<WifiNetwork> Networks;
         private WifisAdapter NetworkAdapter;
         private WifiInfo DefaultNetwork;
         private BlinkCallback myBlinkCallback;
         private WifiCallback myWifiCallback;
+        private List<Room> Houses;
         private RoomsAdapter RoomAdapter;
-        private Room SelectedRoom;
-        private LinearLayout LitterSelectionLayout;
-        private SwipeRefreshLayout LitterSwipe;
-        private RecyclerView LitterRecycler;
-        private SwipeRefreshLayout LitterEmptySwipe;
-        private Button LitterContinue;
-        private Task GetRooms;
-        private List<ERoom> RoomsList;
-        private Department SelectedLitter;
-        private LinearLayout NameSelectionLayout;
-        private EditText NameInput;
-        private Button NameContinue;
-        private List<ELitter> LittersList;
-        private LinearLayout FinishLayout;
-        private Button FinishButton;
 
         public override void OnStart()
         {
@@ -93,17 +80,7 @@ namespace AVG_Scale_Installer
             SetStyle(DialogFragment.StyleNormal, Resource.Style.AppTheme_FullScreenDialog);
 
             RoomsList = await RequestAPI.GetRooms(Data.CurrentCenter.idCenter);
-            if(RoomsList != null)
-            {
-                LittersList = new List<ELitter>();
-                foreach(ERoom r in RoomsList)
-                {
-                    var litters = await RequestAPI.GetLitters(Data.CurrentCenter.idCenter, r.number);
-                    if (litters != null)
-                        LittersList.AddRange(litters);
-                }
-            }
-            else
+            if(RoomsList == null)
             {
                 Toast.MakeText(Activity, "ERROR", ToastLength.Short).Show();
                 Dismiss();
@@ -112,7 +89,7 @@ namespace AVG_Scale_Installer
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            View view = inflater.Inflate(Resource.Layout.AddScaleDialog, container, false);
+            View view = inflater.Inflate(Resource.Layout.AddBlackboxDialog, container, false);
 
             //SetUp WifiMonitor
             myWifiManager = (WifiManager)Context.GetSystemService(Context.WifiService);
@@ -122,27 +99,27 @@ namespace AVG_Scale_Installer
             }
 
             //Toolbar
-            Toolbar toolbar = view.FindViewById<Toolbar>(Resource.Id.AddScaleDialogToolbar);
-            toolbar.SetTitle(Resource.String.add_scale);
+            Toolbar toolbar = view.FindViewById<Toolbar>(Resource.Id.AddBlackboxDialogToolbar);
+            toolbar.SetTitle(Resource.String.add_blackbox);
             toolbar.SetNavigationIcon(Resource.Drawable.clear);
             toolbar.NavigationClick += Toolbar_NavigationClick;
 
             //Pantalla led parpadeando
-            ConfigModeLayout = view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogConfigMode);
-            ConfigModeInfo = view.FindViewById<WebView>(Resource.Id.AddScaleDialogConfigModeInfoText);
-            ConfigModeContinue = view.FindViewById<Button>(Resource.Id.AddScaleDialogConfigModeContinueButton);
-            string info = "<html><body text='white' style='text-align:justify;'>" + Resources.GetText(Resource.String.config_mode_info_scale) + "</body></html>";
+            ConfigModeLayout = view.FindViewById<LinearLayout>(Resource.Id.AddBlackboxDialogConfigMode);
+            ConfigModeInfo = view.FindViewById<WebView>(Resource.Id.AddBlackboxDialogConfigModeInfoText);
+            ConfigModeContinue = view.FindViewById<Button>(Resource.Id.AddBlackboxDialogConfigModeContinueButton);
+            string info = "<html><body text='white' style='text-align:justify;'>" + Resources.GetText(Resource.String.config_mode_info_blackbox) + "</body></html>";
             ConfigModeInfo.SetBackgroundColor(Color.Transparent);
             ConfigModeInfo.LoadData(info, "text/html; charset=utf-8", "UTF-8");
             ConfigModeContinue.Click += ConfigModeContinue_Click;
 
             //Pantalla seleccionar báscula (wifi)
-            WifiSelectionLayout = view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogWifiSelection);
-            WifiSwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddScaleDialogWifiSwipeContainer);
-            WifiRecycler = view.FindViewById<RecyclerView>(Resource.Id.AddScaleDialogWifiRecycler);
-            WifiEmptySwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddScaleDialogWifiEmptySwipeContainer);
-            WifiIdentify = view.FindViewById<Button>(Resource.Id.AddScaleDialogWifiIdentifyButton);
-            WifiContinue = view.FindViewById<Button>(Resource.Id.AddScaleDialogWifiContinueButton);
+            WifiSelectionLayout = view.FindViewById<LinearLayout>(Resource.Id.AddBlackboxDialogWifiSelection);
+            WifiSwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddBlackboxDialogWifiSwipeContainer);
+            WifiRecycler = view.FindViewById<RecyclerView>(Resource.Id.AddBlackboxDialogWifiRecycler);
+            WifiEmptySwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddBlackboxDialogWifiEmptySwipeContainer);
+            WifiIdentify = view.FindViewById<Button>(Resource.Id.AddBlackboxDialogWifiIdentifyButton);
+            WifiContinue = view.FindViewById<Button>(Resource.Id.AddBlackboxDialogWifiContinueButton);
             WifiRecycler.SetLayoutManager(new LinearLayoutManager(Context));
             WifiSwipe.SetProgressBackgroundColorSchemeResource(Resource.Color.lighter);
             WifiEmptySwipe.SetProgressBackgroundColorSchemeResource(Resource.Color.lighter);
@@ -155,11 +132,11 @@ namespace AVG_Scale_Installer
             SelectedNetwork = null;
 
             //Pantalla seleccionar nave
-            RoomSelectionLayout = view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogRoomSelection);
-            RoomSwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddScaleDialogWRoomSwipeContainer);
-            RoomRecycler = view.FindViewById<RecyclerView>(Resource.Id.AddScaleDialogRoomRecycler);
-            RoomEmptySwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddScaleDialogRoomEmptySwipeContainer);
-            RoomContinue = view.FindViewById<Button>(Resource.Id.AddScaleDialogRoomContinueButton);
+            RoomSelectionLayout = view.FindViewById<LinearLayout>(Resource.Id.AddBlackboxDialogRoomSelection);
+            RoomSwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddBlackboxDialogWRoomSwipeContainer);
+            RoomRecycler = view.FindViewById<RecyclerView>(Resource.Id.AddBlackboxDialogRoomRecycler);
+            RoomEmptySwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddBlackboxDialogRoomEmptySwipeContainer);
+            RoomContinue = view.FindViewById<Button>(Resource.Id.AddBlackboxDialogRoomContinueButton);
             RoomRecycler.SetLayoutManager(new LinearLayoutManager(Context));
             RoomSwipe.SetProgressBackgroundColorSchemeResource(Resource.Color.lighter);
             RoomEmptySwipe.SetProgressBackgroundColorSchemeResource(Resource.Color.lighter);
@@ -170,36 +147,20 @@ namespace AVG_Scale_Installer
             RoomContinue.Click += RoomContinue_Click;
             SelectedRoom = null;
 
-            //Pantalla seleccionar departamento
-            LitterSelectionLayout = view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogLitterSelection);
-            LitterSwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddScaleDialogLitterSwipeContainer);
-            LitterRecycler = view.FindViewById<RecyclerView>(Resource.Id.AddScaleDialogLitterRecycler);
-            LitterEmptySwipe = view.FindViewById<SwipeRefreshLayout>(Resource.Id.AddScaleDialogLitterEmptySwipeContainer);
-            LitterContinue = view.FindViewById<Button>(Resource.Id.AddScaleDialogLitterContinueButton);
-            LitterRecycler.SetLayoutManager(new LinearLayoutManager(Context));
-            LitterSwipe.SetProgressBackgroundColorSchemeResource(Resource.Color.lighter);
-            LitterEmptySwipe.SetProgressBackgroundColorSchemeResource(Resource.Color.lighter);
-            LitterSwipe.SetColorSchemeResources(Resource.Color.colorAccent);
-            LitterEmptySwipe.SetColorSchemeResources(Resource.Color.colorAccent);
-            LitterSwipe.Refresh += Litter_Refresh;
-            LitterEmptySwipe.Refresh += Litter_Refresh;
-            LitterContinue.Click += LitterContinue_Click;
-            SelectedLitter = null;
-
             //Pantalla establecer nombre
-            NameSelectionLayout = view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogNameSelection);
-            NameInput = view.FindViewById<EditText>(Resource.Id.AddScaleDialogNameEditText);
-            NameContinue = view.FindViewById<Button>(Resource.Id.AddScaleDialogNameContinue);
+            NameSelectionLayout = view.FindViewById<LinearLayout>(Resource.Id.AddBlackboxDialogNameSelection);
+            NameInput = view.FindViewById<EditText>(Resource.Id.AddBlackboxDialogNameEditText);
+            NameContinue = view.FindViewById<Button>(Resource.Id.AddBlackboxDialogNameContinue);
             NameInput.AfterTextChanged += CheckVoid;
             NameContinue.Click += NameContinue_Click;
 
             //Pantalla fin
-            FinishLayout = view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogFinishLayout);
-            FinishButton = view.FindViewById<Button>(Resource.Id.AddScaleDialogFinishButton);
+            FinishLayout = view.FindViewById<LinearLayout>(Resource.Id.AddBlackboxDialogFinishLayout);
+            FinishButton = view.FindViewById<Button>(Resource.Id.AddBlackboxDialogFinishButton);
             FinishButton.Click += FinishButton_Click;
 
             //Workflow
-            view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogLayout).Touch += delegate
+            view.FindViewById<LinearLayout>(Resource.Id.AddBlackboxDialogLayout).Touch += delegate
             {
                 Functions.HideKeyboard(Activity);
             };
@@ -207,14 +168,11 @@ namespace AVG_Scale_Installer
             return view;
         }
 
-
         #region Workflow
 
-        public async override void OnResume()
+        public override void OnResume()
         {
             base.OnResume();
-
-            
 
             myWifiReceiver = new WifiReceiver(OnSuccessScan, OnFailureScan);
         }
@@ -232,7 +190,7 @@ namespace AVG_Scale_Installer
         private void CheckVoid(object sender, AfterTextChangedEventArgs e)
         {
             EditText input = (EditText)sender;
-            if(input.Text.Length == 0)
+            if (input.Text.Length == 0)
             {
                 NameContinue.Enabled = false;
             }
@@ -241,7 +199,7 @@ namespace AVG_Scale_Installer
                 NameContinue.Enabled = true;
             }
         }
-        
+
         private void Toolbar_NavigationClick(object sender, Toolbar.NavigationClickEventArgs e)
         {
             Dismiss();
@@ -251,11 +209,11 @@ namespace AVG_Scale_Installer
         {
             base.OnActivityCreated(savedInstanceState);
 
-            if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M &&
-                Context.CheckSelfPermission(Manifest.Permission.AccessCoarseLocation) != (int)Permission.Granted &&
-                Context.CheckSelfPermission(Manifest.Permission.AccessFineLocation) != (int)Permission.Granted)
+            if(Build.VERSION.SdkInt >= BuildVersionCodes.M
+                && Context.CheckSelfPermission(Manifest.Permission.AccessCoarseLocation) != (int)Permission.Granted
+                && Context.CheckSelfPermission(Manifest.Permission.AccessFineLocation) != (int)Permission.Granted)
             {
-                RequestPermissions(new string[] { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation }, 1);
+                RequestPermissions(new string[] { Manifest.Permission.AccessFineLocation, Manifest.Permission.AccessCoarseLocation }, 1);
             }
         }
 
@@ -268,7 +226,6 @@ namespace AVG_Scale_Installer
             ConfigModeLayout.Visibility = ViewStates.Gone;
             WifiSelectionLayout.Visibility = ViewStates.Visible;
             RoomSelectionLayout.Visibility = ViewStates.Gone;
-            LitterSelectionLayout.Visibility = ViewStates.Gone;
             NameSelectionLayout.Visibility = ViewStates.Gone;
             FinishLayout.Visibility = ViewStates.Gone;
 
@@ -300,12 +257,12 @@ namespace AVG_Scale_Installer
             WifiContinue.Enabled = false;
 
             Networks = new List<WifiNetwork>(myWifiManager.ScanResults.Select(x => new WifiNetwork(x, false)));
-            Networks = Networks.Where(x => x.ScanResult.Ssid.StartsWith(Data.WifiFilterScale)).ToList();
+            Networks = Networks.Where(x => x.ScanResult.Ssid.StartsWith(Data.WifiFilterBlackbox)).ToList();
             NetworkAdapter = new WifisAdapter(Networks);
             NetworkAdapter.ItemClick += Network_Click;
             WifiRecycler.SetAdapter(NetworkAdapter);
 
-            if(Networks.Count == 0)
+            if (Networks.Count == 0)
             {
                 WifiEmptySwipe.Visibility = ViewStates.Visible;
                 WifiSwipe.Visibility = ViewStates.Gone;
@@ -328,7 +285,7 @@ namespace AVG_Scale_Installer
         private void Network_Click(object sender, int pos)
         {
             //Click listener
-            if(SelectedNetwork == null)
+            if (SelectedNetwork == null)
             {
                 //Nada seleccionado
                 SelectedNetwork = Networks[pos];
@@ -337,7 +294,7 @@ namespace AVG_Scale_Installer
             }
             else
             {
-                if(SelectedNetwork == Networks[pos])
+                if (SelectedNetwork == Networks[pos])
                 {
                     //Click en el que ya está seleccionado (Deseleccionar)
                     SelectedNetwork.Selected = false;
@@ -361,7 +318,7 @@ namespace AVG_Scale_Installer
 
         public void NotifyNetworkSelection()
         {
-            if(SelectedNetwork != null)
+            if (SelectedNetwork != null)
             {
                 WifiIdentify.Enabled = true;
                 WifiContinue.Enabled = true;
@@ -393,7 +350,7 @@ namespace AVG_Scale_Installer
 
             NetworkSpecifier specifier = new WifiNetworkSpecifier.Builder()
                 .SetSsid(SelectedNetwork.ScanResult.Ssid)
-                .SetWpa2Passphrase(Data.WifiPasswordScale)
+                .SetWpa2Passphrase(Data.WifiPasswordBlackbox)
                 .Build();
 
             NetworkRequest request =
@@ -415,10 +372,10 @@ namespace AVG_Scale_Installer
         {
             WifiInfo info = myWifiManager.ConnectionInfo;
             DateTime chagingWifi = DateTime.Now;
-            while(info.SSID != DefaultNetwork.SSID)
+            while (info.SSID != DefaultNetwork.SSID)
             {
                 info = myWifiManager.ConnectionInfo;
-                if(DateTime.Now.Subtract(chagingWifi).Seconds >= 30)
+                if (DateTime.Now.Subtract(chagingWifi).Seconds >= 30)
                 {
                     Functions.Loading(false);
                     Dismiss();
@@ -439,7 +396,7 @@ namespace AVG_Scale_Installer
 
             NetworkSpecifier specifier = new WifiNetworkSpecifier.Builder()
                 .SetSsid(SelectedNetwork.ScanResult.Ssid)
-                .SetWpa2Passphrase(Data.WifiPasswordScale)
+                .SetWpa2Passphrase(Data.WifiPasswordBlackbox)
                 .Build();
 
             NetworkRequest request = new NetworkRequest.Builder()
@@ -473,7 +430,6 @@ namespace AVG_Scale_Installer
                     ConfigModeLayout.Visibility = ViewStates.Gone;
                     WifiSelectionLayout.Visibility = ViewStates.Gone;
                     RoomSelectionLayout.Visibility = ViewStates.Visible;
-                    LitterSelectionLayout.Visibility = ViewStates.Gone;
                     NameSelectionLayout.Visibility = ViewStates.Gone;
                     FinishLayout.Visibility = ViewStates.Gone;
 
@@ -571,103 +527,6 @@ namespace AVG_Scale_Installer
             ConfigModeLayout.Visibility = ViewStates.Gone;
             WifiSelectionLayout.Visibility = ViewStates.Gone;
             RoomSelectionLayout.Visibility = ViewStates.Gone;
-            LitterSelectionLayout.Visibility = ViewStates.Visible;
-            NameSelectionLayout.Visibility = ViewStates.Gone;
-            FinishLayout.Visibility = ViewStates.Gone;
-
-            LitterSwipe.Refreshing = true;
-            LitterEmptySwipe.Refreshing = true;
-            LitterSwipe.Visibility = ViewStates.Visible;
-            LitterEmptySwipe.Visibility = ViewStates.Gone;
-
-            OnLittersLoaded();
-        }
-
-        #endregion
-
-        #region Litter
-
-        private void OnLittersLoaded()
-        {
-            SelectedLitter = null;
-            LitterContinue.Enabled = false;
-
-            Departments = new List<Department>(LittersList.FindAll(x => x.room.number == SelectedRoom.House.number).Select(l => new Department(l, false)));
-            LitterAdapter = new LittersAdapter(Departments);
-            LitterAdapter.ItemClick += Litter_Click;
-            LitterRecycler.SetAdapter(LitterAdapter);
-
-            if (Departments.Count == 0)
-            {
-                LitterEmptySwipe.Visibility = ViewStates.Visible;
-                LitterSwipe.Visibility = ViewStates.Gone;
-                LitterEmptySwipe.Refreshing = false;
-            }
-            else
-            {
-                LitterEmptySwipe.Visibility = ViewStates.Gone;
-                LitterSwipe.Visibility = ViewStates.Visible;
-                LitterSwipe.Refreshing = false;
-            }
-        }
-
-        private void Litter_Click(object sender, int pos)
-        {
-            //Click listener
-            if (SelectedLitter == null)
-            {
-                //Nada seleccionado
-                SelectedLitter = Departments[pos];
-                Departments[pos].Selected = true;
-                LitterAdapter.NotifyItemChanged(pos);
-            }
-            else
-            {
-                if (SelectedLitter == Departments[pos])
-                {
-                    //Click en el que ya está seleccionado (Deseleccionar)
-                    SelectedLitter.Selected = false;
-                    SelectedLitter = null;
-                    LitterAdapter.NotifyItemChanged(pos);
-                }
-                else
-                {
-                    //Click en cualquier otro (Selección del nuevo y deselección del antiguo)
-                    int prevPos = Departments.FindIndex(x => x == SelectedLitter);
-                    SelectedLitter.Selected = false;
-                    LitterAdapter.NotifyItemChanged(prevPos);
-
-                    SelectedLitter = Departments[pos];
-                    SelectedLitter.Selected = true;
-                    LitterAdapter.NotifyItemChanged(pos);
-                }
-            }
-            NotifyLitterSelection();
-        }
-
-        private void NotifyLitterSelection()
-        {
-            if (SelectedLitter != null)
-            {
-                LitterContinue.Enabled = true;
-            }
-            else
-            {
-                LitterContinue.Enabled = false;
-            }
-        }
-
-        private void Litter_Refresh(object sender, EventArgs e)
-        {
-            OnLittersLoaded();
-        }
-
-        private void LitterContinue_Click(object sender, EventArgs e)
-        {
-            ConfigModeLayout.Visibility = ViewStates.Gone;
-            WifiSelectionLayout.Visibility = ViewStates.Gone;
-            RoomSelectionLayout.Visibility = ViewStates.Gone;
-            LitterSelectionLayout.Visibility = ViewStates.Gone;
             NameSelectionLayout.Visibility = ViewStates.Visible;
             FinishLayout.Visibility = ViewStates.Gone;
         }
@@ -683,7 +542,7 @@ namespace AVG_Scale_Installer
 
             //ADD ALL
             string uri = "http://192.168.4.1/setup?";
-            
+
 
             //Desconexión del punto de acceso
             ConnectivityManager connectivityManager = (ConnectivityManager)
@@ -695,7 +554,6 @@ namespace AVG_Scale_Installer
             ConfigModeLayout.Visibility = ViewStates.Gone;
             WifiSelectionLayout.Visibility = ViewStates.Gone;
             RoomSelectionLayout.Visibility = ViewStates.Gone;
-            LitterSelectionLayout.Visibility = ViewStates.Gone;
             NameSelectionLayout.Visibility = ViewStates.Gone;
             FinishLayout.Visibility = ViewStates.Visible;
         }
@@ -710,76 +568,5 @@ namespace AVG_Scale_Installer
         }
 
         #endregion
-
-    }
-
-    class BlinkCallback : ConnectivityManager.NetworkCallback
-    {
-        ConnectivityManager CM;
-        Action<bool> Finished;
-
-        public BlinkCallback(ConnectivityManager cm, Action<bool> finished)
-        {
-            CM = cm;
-            Finished = finished;
-        }
-
-        public override async void OnAvailable(Android.Net.Network network)
-        {
-            base.OnAvailable(network);
-            CM.BindProcessToNetwork(network);
-
-            //Blink
-            try
-            {
-                HttpClient client = new HttpClient();
-                string uri = "http://192.168.4.1/blink";
-                await client.GetAsync(uri);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("ERROR al lanzar el blink: " + ex.Message);
-            }
-
-            //Fin
-            CM.UnregisterNetworkCallback(this);
-            CM.BindProcessToNetwork(null);
-
-            Finished(true);
-        }
-
-        public override void OnUnavailable()
-        {
-            base.OnUnavailable();
-
-            CM.UnregisterNetworkCallback(this);
-            Finished(false);
-        }
-    }
-
-    class WifiCallback : ConnectivityManager.NetworkCallback
-    {
-        ConnectivityManager CM;
-        Action<bool, ConnectivityManager> Finished;
-
-        public WifiCallback(ConnectivityManager cm, Action<bool, ConnectivityManager> finished)
-        {
-            CM = cm;
-            Finished = finished;
-        }
-
-        public override void OnAvailable(Android.Net.Network network)
-        {
-            base.OnAvailable(network);
-            CM.BindProcessToNetwork(network);
-            Finished(true, CM);
-        }
-
-        public override void OnUnavailable()
-        {
-            base.OnUnavailable();
-            CM.UnregisterNetworkCallback(this);
-            Finished(false, CM);
-        }
     }
 }

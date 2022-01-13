@@ -12,16 +12,11 @@ namespace AVG_Scale_Installer.Adapters
     class WifisAdapter : RecyclerView.Adapter
     {
         public event EventHandler<int> ItemClick;
-        public IList<Network> items;
+        public IList<WifiNetwork> items;
 
-        public WifisAdapter(IList<Network> data)
+        public WifisAdapter(IList<WifiNetwork> data)
         {
             items = data;
-        }
-
-        public override long GetItemId(int position)
-        {
-            return base.GetItemId(position);
         }
 
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
@@ -67,12 +62,12 @@ namespace AVG_Scale_Installer.Adapters
 
     }
 
-    public class Network
+    public class WifiNetwork
     {
         public ScanResult ScanResult { get; set; }
         public bool Selected { get; set; }
 
-        public Network(ScanResult sr, bool selected)
+        public WifiNetwork(ScanResult sr, bool selected)
         {
             ScanResult = sr;
             Selected = selected;
