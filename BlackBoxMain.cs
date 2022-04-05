@@ -96,7 +96,7 @@ namespace AVG_Scale_Installer
         {
             var selected = HouseList[pos];
 
-            BlackBoxSelection bl = new BlackBoxSelection(selected.number);
+            BlackBoxSelection bl = new BlackBoxSelection(selected);
             Activity.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, bl, null).AddToBackStack(null).Commit();
 
         }

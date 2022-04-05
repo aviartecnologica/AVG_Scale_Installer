@@ -13,7 +13,8 @@
         android:textColor="@color/white"
         android:layout_weight="1"
         android:text="@string/scales"
-        android:textSize="28sp" 
+        android:textSize="28sp"
+        android:drawableTop="@drawable/scale"
         android:id="@+id/HomeScalesButton"
     />
 
@@ -27,6 +28,7 @@
         android:layout_weight="1"
         android:text="@string/blackbox"
         android:textSize="28sp"
+        android:drawableTop="@drawable/blackbox"
         android:id="@+id/HomeBlackboxButton"
     />
 

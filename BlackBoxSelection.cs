@@ -24,12 +24,12 @@ namespace AVG_Scale_Installer
         private SwipeRefreshLayout Swipe;
         private RecyclerView BlackBoxRecycler;
         private SwipeRefreshLayout EmptySwipe;
-        private int RoomNumber;
         private List<EBlackBoxesBlackBox> BlackBoxList;
+        private ERoom SelectedRoom;
 
-        public BlackBoxSelection(int room)
+        public BlackBoxSelection(ERoom room)
         {
-            RoomNumber = room;
+            SelectedRoom = room;
         }
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -64,7 +64,7 @@ namespace AVG_Scale_Installer
 
         private async void Blackbox_Refresh(object sender, EventArgs e)
         {
-            BlackBoxList = await RequestAPI.GetBlackboxes(Data.CurrentCenter.idCenter, RoomNumber);
+            BlackBoxList = await RequestAPI.GetBlackboxes(Data.CurrentCenter.idCenter, SelectedRoom.number);
             if(BlackBoxList == null)
             {
                 BlackBoxList = new List<EBlackBoxesBlackBox>();
@@ -95,6 +95,9 @@ namespace AVG_Scale_Installer
         private void BlackBox_Click(object sender, int pos)
         {
             var selected = BlackBoxList[pos];
+
+            BlackBox blackBox = new BlackBox(selected, SelectedRoom);
+            Activity.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, blackBox, null).AddToBackStack(null).Commit();
         }
     }
 }

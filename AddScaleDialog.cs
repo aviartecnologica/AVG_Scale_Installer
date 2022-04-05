@@ -6,6 +6,7 @@ using Android.Graphics;
 using Android.Net;
 using Android.Net.Wifi;
 using Android.OS;
+using Android.Preferences;
 using Android.Runtime;
 using Android.Text;
 using Android.Util;
@@ -19,10 +20,12 @@ using AndroidX.SwipeRefreshLayout.Widget;
 using AVG_access_data;
 using AVG_Scale_Installer.Adapters;
 using AVG_Scale_Installer.Tools;
+using MQTTnet.Extensions.ManagedClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -54,6 +57,7 @@ namespace AVG_Scale_Installer
         private List<Room> Houses;
         private List<WifiNetwork> Networks;
         private WifisAdapter NetworkAdapter;
+        private string SelectedMac;
         private WifiInfo DefaultNetwork;
         private BlinkCallback myBlinkCallback;
         private WifiCallback myWifiCallback;
@@ -65,14 +69,19 @@ namespace AVG_Scale_Installer
         private SwipeRefreshLayout LitterEmptySwipe;
         private Button LitterContinue;
         private Task GetRooms;
+        private ISharedPreferences Prefs;
         private List<ERoom> RoomsList;
         private Department SelectedLitter;
         private LinearLayout NameSelectionLayout;
         private EditText NameInput;
         private Button NameContinue;
         private List<ELitter> LittersList;
+        private LinearLayout PasswordSelectionLayout;
+        private EditText PasswordInput;
+        private Button PasswordContinue;
         private LinearLayout FinishLayout;
         private Button FinishButton;
+        private string SelectedName;
 
         public override void OnStart()
         {
@@ -91,6 +100,8 @@ namespace AVG_Scale_Installer
         {
             base.OnCreate(savedInstanceState);
             SetStyle(DialogFragment.StyleNormal, Resource.Style.AppTheme_FullScreenDialog);
+
+            Prefs = PreferenceManager.GetDefaultSharedPreferences(Context);
 
             RoomsList = await RequestAPI.GetRooms(Data.CurrentCenter.idCenter);
             if(RoomsList != null)
@@ -193,6 +204,13 @@ namespace AVG_Scale_Installer
             NameInput.AfterTextChanged += CheckVoid;
             NameContinue.Click += NameContinue_Click;
 
+            //Pantalla establecer contraseña
+            PasswordSelectionLayout = view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogPasswordSelection);
+            PasswordInput = view.FindViewById<EditText>(Resource.Id.AddScaleDialogPasswordEditText);
+            PasswordContinue = view.FindViewById<Button>(Resource.Id.AddScaleDialogPasswordContinue);
+            PasswordInput.AfterTextChanged += CheckVoid;
+            PasswordContinue.Click += PasswordContinue_Click;
+
             //Pantalla fin
             FinishLayout = view.FindViewById<LinearLayout>(Resource.Id.AddScaleDialogFinishLayout);
             FinishButton = view.FindViewById<Button>(Resource.Id.AddScaleDialogFinishButton);
@@ -222,6 +240,7 @@ namespace AVG_Scale_Installer
         public override void OnDestroy()
         {
             base.OnDestroy();
+
             try
             {
                 Context.UnregisterReceiver(myWifiReceiver);
@@ -235,10 +254,12 @@ namespace AVG_Scale_Installer
             if(input.Text.Length == 0)
             {
                 NameContinue.Enabled = false;
+                PasswordContinue.Enabled = false;
             }
             else
             {
                 NameContinue.Enabled = true;
+                PasswordContinue.Enabled = true;
             }
         }
         
@@ -270,6 +291,7 @@ namespace AVG_Scale_Installer
             RoomSelectionLayout.Visibility = ViewStates.Gone;
             LitterSelectionLayout.Visibility = ViewStates.Gone;
             NameSelectionLayout.Visibility = ViewStates.Gone;
+            PasswordSelectionLayout.Visibility = ViewStates.Gone;
             FinishLayout.Visibility = ViewStates.Gone;
 
             WifiSwipe.Refreshing = true;
@@ -434,6 +456,8 @@ namespace AVG_Scale_Installer
 
         private void WifiContinue_Click(object sender, EventArgs e)
         {
+            var macs = SelectedNetwork.ScanResult.Ssid.Split("-");
+            SelectedMac = macs.Length == 2 ? macs[1] : "";
             DefaultNetwork = myWifiManager.ConnectionInfo;
             Functions.Loading(true);
 
@@ -458,6 +482,7 @@ namespace AVG_Scale_Installer
 
         private void WifiConnected(bool success, ConnectivityManager cm)
         {
+            Functions.Loading(false);
             if (!success)
             {
                 Activity.RunOnUiThread(() =>
@@ -475,6 +500,7 @@ namespace AVG_Scale_Installer
                     RoomSelectionLayout.Visibility = ViewStates.Visible;
                     LitterSelectionLayout.Visibility = ViewStates.Gone;
                     NameSelectionLayout.Visibility = ViewStates.Gone;
+                    PasswordSelectionLayout.Visibility = ViewStates.Gone;
                     FinishLayout.Visibility = ViewStates.Gone;
 
                     RoomSwipe.Refreshing = true;
@@ -573,6 +599,7 @@ namespace AVG_Scale_Installer
             RoomSelectionLayout.Visibility = ViewStates.Gone;
             LitterSelectionLayout.Visibility = ViewStates.Visible;
             NameSelectionLayout.Visibility = ViewStates.Gone;
+            PasswordSelectionLayout.Visibility = ViewStates.Gone;
             FinishLayout.Visibility = ViewStates.Gone;
 
             LitterSwipe.Refreshing = true;
@@ -669,6 +696,7 @@ namespace AVG_Scale_Installer
             RoomSelectionLayout.Visibility = ViewStates.Gone;
             LitterSelectionLayout.Visibility = ViewStates.Gone;
             NameSelectionLayout.Visibility = ViewStates.Visible;
+            PasswordSelectionLayout.Visibility = ViewStates.Gone;
             FinishLayout.Visibility = ViewStates.Gone;
         }
 
@@ -679,11 +707,55 @@ namespace AVG_Scale_Installer
         private void NameContinue_Click(object sender, EventArgs e)
         {
             Functions.HideKeyboard(Activity);
+            SelectedName = NameInput.Text;
             NameInput.ClearFocus();
 
-            //ADD ALL
-            string uri = "http://192.168.4.1/setup?";
+            ConfigModeLayout.Visibility = ViewStates.Gone;
+            WifiSelectionLayout.Visibility = ViewStates.Gone;
+            RoomSelectionLayout.Visibility = ViewStates.Gone;
+            LitterSelectionLayout.Visibility = ViewStates.Gone;
+            NameSelectionLayout.Visibility = ViewStates.Gone;
+            PasswordSelectionLayout.Visibility = ViewStates.Visible;
+            FinishLayout.Visibility = ViewStates.Gone;
+        }
+
+        #endregion
+
+        #region Password
+
+        private async void PasswordContinue_Click(object sender, EventArgs e)
+        {
+            Functions.HideKeyboard(Activity);
+            PasswordInput.ClearFocus();
+
+            Functions.Loading(true);
             
+
+            //ADD ALL
+            string uri = $"http://192.168.4.1/setup?" +
+                $"ssid={DefaultNetwork.SSID.Trim('\"')}" +
+                $"&passwd={PasswordInput.Text}" +
+                $"&mqttserver={Data.MyAddress.ToMqtt()}" +
+                $"&mqttport={MqttClient.PORT}" +
+                $"&center={SelectedRoom.House.center.idCenter}" +
+                $"&typeroom={SelectedRoom.House.type.idRoomType}" +
+                $"&number={SelectedRoom.House.number}" +
+                $"&department={SelectedLitter.Litter.department}";
+            using(var client = new HttpClient())
+            {
+                try
+                {
+                    await client.GetAsync(uri);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Log.Error("SCALE", ex.Message);
+                    Toast.MakeText(Context, "ERROR", ToastLength.Short).Show();
+                }
+            }
+
+            await Task.Delay(2000);
 
             //Desconexión del punto de acceso
             ConnectivityManager connectivityManager = (ConnectivityManager)
@@ -691,12 +763,128 @@ namespace AVG_Scale_Installer
             connectivityManager.UnregisterNetworkCallback(myWifiCallback);
             connectivityManager.BindProcessToNetwork(null);
 
+            WifiInfo info = myWifiManager.ConnectionInfo;
+            DateTime changingWifi = DateTime.Now;
+            Ping ping = new Ping();
+            PingReply reply;
+            bool timeout = false;
+            await Task.Run(() =>
+            {
+                while (info.SSID != DefaultNetwork.SSID)
+                {
+                    info = myWifiManager.ConnectionInfo;
+                    if (DateTime.Now.Subtract(changingWifi).Seconds >= 30)
+                    {
+                        timeout = true;
+                        break;
+                    }
+                }
+
+                do
+                {
+                    reply = ping.Send(Data.MyAddress.Server);
+                    Log.Info("MQTT", "PING REPLY - " + reply.Status.ToString());
+                    if (DateTime.Now.Subtract(changingWifi).Seconds >= 30)
+                    {
+                        timeout = true;
+                        break;
+                    }
+                }
+                while (reply.Status != IPStatus.Success);
+            });
+            if (timeout)
+            {
+                Functions.Loading(false);
+                Toast.MakeText(Context, Resource.String.wrong_wifi, ToastLength.Long).Show();
+                Dismiss();
+            }
+
+            var scale = await RequestAPI.GetScaleByMac(SelectedMac);
+            EBlackBoxesLocation location = new EBlackBoxesLocation(scale, SelectedRoom.House.center, SelectedRoom.House, SelectedLitter.Litter, DateTime.Now, null);
+
+            MqttClient mqttClient = new MqttClient();
+            mqttClient.Client.UseConnectedHandler(async e =>
+            {
+                Log.Info("MQTT", "CONNECTED");
+                try
+                {
+                    await mqttClient.SubscribeAsync($"scale/{SelectedRoom.House.center.idCenter}/{SelectedRoom.House.type.idRoomType}/{SelectedRoom.House.number}/{SelectedLitter.Litter.department}/{SelectedMac}/configmode");
+                    Log.Info("MQTT", "SUBSCRIBED");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("MQTT", ex.Message);
+                }
+            });
+            mqttClient.Client.UseDisconnectedHandler(e =>
+            {
+                Log.Info("MQTT", "DISCONNECTED");
+            });
+            mqttClient.Client.UseApplicationMessageReceivedHandler(async e =>
+            {
+                string[] topic = e.ApplicationMessage.Topic.Split("/");
+                string value = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                Log.Info("MQTT", $"MESSAGE RECEIVED - {value}");
+
+                if (value == "on")
+                {
+                    bool resultLocation = await RequestAPI.InsertScaleLocation(location);
+                    scale.name = SelectedName;
+                    bool resultName = await RequestAPI.UpdateScale(scale);
+                    if (resultLocation && resultName)
+                    {
+                        try
+                        {
+                            await mqttClient.PublishAsync($"scale/{SelectedRoom.House.center.idCenter}/{SelectedRoom.House.type.idRoomType}/{SelectedRoom.House.number}/{SelectedLitter.Litter.department}/{SelectedMac}/set-configmode", "off", false);
+                            Log.Info("MQTT", "MESSAGE SENT");
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("MQTT", ex.Message);
+                        }
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        await mqttClient.Client.UnsubscribeAsync();
+                        Log.Info("MQTT", "UNSUBSCRIBED");
+                        mqttClient.Client.Dispose();
+                        Log.Info("MQTT", "CLOSING CONNECTION");
+
+                        Activity.RunOnUiThread(() => MqttFinished());
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("MQTT", ex.Message);
+                    }
+                }
+            });
+            try
+            {
+                await mqttClient.ConnectAsync();
+                Log.Info("MQTT", "STARTING CONNECTION");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("MQTT", ex.Message);
+                Functions.Loading(false);
+                Toast.MakeText(Context, "ERROR", ToastLength.Short).Show();
+                Dismiss();
+            }
+        }
+
+        private void MqttFinished()
+        {
+            Functions.Loading(false);
 
             ConfigModeLayout.Visibility = ViewStates.Gone;
             WifiSelectionLayout.Visibility = ViewStates.Gone;
             RoomSelectionLayout.Visibility = ViewStates.Gone;
             LitterSelectionLayout.Visibility = ViewStates.Gone;
             NameSelectionLayout.Visibility = ViewStates.Gone;
+            PasswordSelectionLayout.Visibility = ViewStates.Gone;
             FinishLayout.Visibility = ViewStates.Visible;
         }
 
@@ -730,17 +918,20 @@ namespace AVG_Scale_Installer
             CM.BindProcessToNetwork(network);
 
             //Blink
-            try
+            string uri = "http://192.168.4.1/blink";
+            using(var client = new HttpClient())
             {
-                HttpClient client = new HttpClient();
-                string uri = "http://192.168.4.1/blink";
-                await client.GetAsync(uri);
+                try
+                {
+                    await client.GetAsync(uri);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ERROR al lanzar el blink: " + ex.Message);
+                    Log.Error("BLINK", ex.Message);
+                }
             }
-            catch(Exception ex)
-            {
-                Console.WriteLine("ERROR al lanzar el blink: " + ex.Message);
-            }
-
+            
             //Fin
             CM.UnregisterNetworkCallback(this);
             CM.BindProcessToNetwork(null);

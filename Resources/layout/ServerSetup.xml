@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -55,8 +56,7 @@
                     android:id="@+id/ServerSetupServerInput"
                     android:layout_weight="4"
                     android:layout_marginRight="8dp"
-                    android:inputType="number|numberDecimal"
-                    android:digits="0123456789."
+                    android:inputType="textUri"
                 />
 
                 <Button
@@ -87,13 +87,17 @@
                 android:visibility="gone"
             />
 
-            <ImageView
-                android:layout_width="100dp"
+            <com.budiyev.android.codescanner.CodeScannerView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:layout_weight="1"
-                android:src="@drawable/qr"
-                android:id="@+id/ServerSetupQrImage"
+                android:id="@+id/ServerSetupScannerView"
+                app:autoFocusButtonColor="@color/white"
+                app:autoFocusButtonVisible="true"
+                app:flashButtonColor="@color/white"
+                app:flashButtonVisible="true"
+                android:visibility="invisible"
+                app:maskColor="#6C000000"
             />
 
             <Button
@@ -113,7 +117,7 @@
                 android:adjustViewBounds="true"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:src="@drawable/poweredby"
+                android:src="@drawable/poweredbyavinatur"
                 android:layout_gravity="center_horizontal"
             />
 
@@ -143,7 +147,7 @@
                 android:adjustViewBounds="true"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:src="@drawable/poweredby"
+                android:src="@drawable/poweredbyavinatur"
                 android:layout_gravity="center_horizontal"
             />
 

@@ -24,16 +24,14 @@ namespace AVG_Scale_Installer
         private SwipeRefreshLayout Swipe;
         private RecyclerView ScaleRecycler;
         private SwipeRefreshLayout EmptySwipe;
-        private int RoomNumber;
-        private int LitterDepartment;
-        private int LitterLot;
         private List<EBlackBoxesScale> ScaleList;
+        private ERoom SelectedRoom;
+        private ELitter SelectedLitter;
 
-        public ScaleSelection(int room, int dep, int lot)
+        public ScaleSelection(ERoom room, ELitter litter)
         {
-            RoomNumber = room;
-            LitterDepartment = dep;
-            LitterLot = lot;
+            SelectedRoom = room;
+            SelectedLitter = litter;
         }
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -68,7 +66,7 @@ namespace AVG_Scale_Installer
 
         private async void Scale_Refresh(object sender, EventArgs e)
         {
-            ScaleList = await RequestAPI.GetScales(Data.CurrentCenter.idCenter, RoomNumber, LitterDepartment, LitterLot);
+            ScaleList = await RequestAPI.GetScales(Data.CurrentCenter.idCenter, SelectedRoom.number, SelectedLitter.department, SelectedLitter.lot.idLot);
             if(ScaleList == null)
             {
                 ScaleList = new List<EBlackBoxesScale>();
@@ -99,6 +97,9 @@ namespace AVG_Scale_Installer
         private void Scale_Click(object sender, int pos)
         {
             var selected = ScaleList[pos];
+
+            Scale scale = new Scale(selected, SelectedRoom, SelectedLitter);
+            Activity.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, scale, null).AddToBackStack(null).Commit();
         }
     }
 }

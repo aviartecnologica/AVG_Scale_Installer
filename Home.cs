@@ -6,10 +6,12 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using AndroidX.Fragment.App;
+using AVG_Scale_Installer.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AVG_Scale_Installer
 {
@@ -18,9 +20,13 @@ namespace AVG_Scale_Installer
         private Button ScalesButton;
         private Button BlackBoxButton;
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public async override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+
+            await RequestAPI.RefreshToken();
+
+            Data.CurrentFM = Activity.SupportFragmentManager;
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -43,7 +49,6 @@ namespace AVG_Scale_Installer
         {
             ScalesMain scales = new ScalesMain();
             Activity.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, scales, "ScalesMain").AddToBackStack(null).Commit();
-
         }
 
         private void BlackBoxButton_Click(object sender, EventArgs e)

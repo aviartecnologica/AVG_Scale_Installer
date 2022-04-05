@@ -28,7 +28,7 @@ namespace AVG_Scale_Installer
             Toolbar mToolbar = FindViewById<Toolbar>(Resource.Id.MainActivityToolbar);
             SetSupportActionBar(mToolbar);
 
-            Data.Server = Prefs.GetString("server", "");
+            Data.MyAddress = new Address(Prefs.GetString("server", ""));
 
             Data.CurrentCenter = await RequestAPI.GetCurrentCenter();
             if(Data.CurrentCenter == null)
@@ -36,8 +36,8 @@ namespace AVG_Scale_Installer
                 Toast.MakeText(this, "ERROR", ToastLength.Short).Show();
                 Intent intent = new Intent(this, typeof(InitialActivity));
                 Prefs.Edit().PutString("server", "").Apply();
-                FinishAffinity();
-                StartActivity(intent);
+                //FinishAffinity();
+                //StartActivity(intent);
             }
 
             SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, new Home(), "Home").Commit();

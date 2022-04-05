@@ -1,4 +1,6 @@
-﻿using Android.Content;
+﻿using Android;
+using Android.Content;
+using Android.Content.PM;
 using Android.Graphics;
 using Android.OS;
 using Android.Preferences;
@@ -7,19 +9,22 @@ using Android.Util;
 using Android.Views;
 using Android.Webkit;
 using Android.Widget;
+using AndroidX.Core.App;
+using AndroidX.Core.Content;
 using AndroidX.Fragment.App;
 using AVG_Scale_Installer.Tools;
+using Firebase.CodeScanner;
+using Google.ZXing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
-using Xamarin.Google.MLKit.Vision.BarCode;
 
 namespace AVG_Scale_Installer
 {
-    public class ServerSetup : Fragment
+    public class ServerSetup : Fragment, IDecodeCallback
     {
         private LinearLayout Parent;
         private LinearLayout Logos;
@@ -27,9 +32,11 @@ namespace AVG_Scale_Installer
         private EditText ServerInput;
         private Button ScanButton;
         private TextView ErrorText;
-        private ImageView QrImage;
+        private CodeScannerView ScannerView;
+        private CodeScanner _CodeScanner;
         private Button ContinueButton;
         private ISharedPreferences Prefs;
+        private const int CAMERA_REQUEST_CODE = 101;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -56,7 +63,13 @@ namespace AVG_Scale_Installer
 
             ErrorText = view.FindViewById<TextView>(Resource.Id.ServerSetupErrorText);
 
-            QrImage = view.FindViewById<ImageView>(Resource.Id.ServerSetupQrImage);
+            ScannerView = view.FindViewById<CodeScannerView>(Resource.Id.ServerSetupScannerView);
+            _CodeScanner = new CodeScanner(Context, ScannerView)
+            {
+                ScanMode = ScanMode.Continuous,
+                AutoFocusEnabled = true,
+                AutoFocusMode = AutoFocusMode.Continuous
+            };
 
             ContinueButton = view.FindViewById<Button>(Resource.Id.ServerSetupContinueButton);
 
@@ -66,25 +79,12 @@ namespace AVG_Scale_Installer
                 ServerInput.ClearFocus();
             };
 
-            ServerInput.FocusChange += ServerInput_FocusChange;
             ServerInput.AfterTextChanged += ServerInput_AfterTextChanged;
 
             ScanButton.Click += ScanButton_Click;
             ContinueButton.Click += ContinueButton_Click;
 
             return view;
-        }
-
-        private void ServerInput_FocusChange(object sender, View.FocusChangeEventArgs e)
-        {
-            if (ServerInput.IsFocused)
-            {
-                QrImage.Visibility = ViewStates.Gone;
-            }
-            else
-            {
-                QrImage.Visibility = ViewStates.Visible;
-            }
         }
 
         public async override void OnActivityCreated(Bundle savedInstanceState)
@@ -109,10 +109,41 @@ namespace AVG_Scale_Installer
 
         private void ScanButton_Click(object sender, EventArgs e)
         {
-            Toast.MakeText(Context, "Work in progress", ToastLength.Short).Show();
+            if (ContextCompat.CheckSelfPermission(Context, Manifest.Permission.Camera) == Android.Content.PM.Permission.Granted)
+            {
+                StartPreview();
+                return;
+            }
 
-            BarcodeScannerOptions options = new BarcodeScannerOptions.Builder()
-                .SetBarcodeFormats(Barcode.FormatQrCode).Build();
+            ActivityCompat.RequestPermissions(Activity, new[] { Manifest.Permission.Camera }, 1001);
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        {
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            if (requestCode == 1001)
+            {
+                if (permissions.Length > 0 && grantResults.Length > 0 && permissions[0].Equals(Manifest.Permission.Camera) &&
+                    grantResults[0] == Android.Content.PM.Permission.Granted)
+                {
+                    StartPreview();
+                }
+            }
+        }
+
+        private void StartPreview()
+        {
+            ScannerView.Visibility = ViewStates.Visible;
+            _CodeScanner.DecodeCallback = this;
+            _CodeScanner.StartPreview();
+        }
+
+        public override void OnPause()
+        {
+            base.OnPause();
+            _CodeScanner.StopPreview();
+            _CodeScanner.DecodeCallback = null;
+            ScannerView.Visibility = ViewStates.Invisible;
         }
 
         private async void ContinueButton_Click(object sender, EventArgs e)
@@ -123,7 +154,8 @@ namespace AVG_Scale_Installer
             try
             {
                 Ping ping = new Ping();
-                var reply = ping.Send(ServerInput.Text);
+                var ip = ServerInput.Text.Substring(0, ServerInput.Text.IndexOf(":"));
+                var reply = ping.Send(ip);
 
                 if(reply.Status == IPStatus.Success)
                 {
@@ -151,5 +183,15 @@ namespace AVG_Scale_Installer
 
         }
 
+        public void OnDecoded(Result p0)
+        {
+            _CodeScanner.StopPreview();
+            _CodeScanner.DecodeCallback = null;
+            Activity.RunOnUiThread(() =>
+            {
+                ServerInput.Text = p0.Text;
+                ScannerView.Visibility = ViewStates.Invisible;
+            });
+        }
     }
 }

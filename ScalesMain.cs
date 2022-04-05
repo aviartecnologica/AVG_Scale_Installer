@@ -97,7 +97,7 @@ namespace AVG_Scale_Installer
         {
             var selected = HouseList[pos];
 
-            LitterSelection lit = new LitterSelection(selected.number);
+            LitterSelection lit = new LitterSelection(selected);
             Activity.SupportFragmentManager.BeginTransaction().Replace(Resource.Id.MainActivityFrameLayout, lit, null).AddToBackStack(null).Commit();
         }
 

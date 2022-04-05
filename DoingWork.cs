@@ -33,7 +33,7 @@ namespace AVG_Scale_Installer
             try
             {
                 Gif = view.FindViewById<GifImageView>(Resource.Id.DoingWorkGif);
-                Stream input = Resources.OpenRawResource(Resource.Drawable.blinkgif);
+                Stream input = Resources.OpenRawResource(Resource.Drawable.chick1);
                 byte[] bytes = ConvertByteArray(input);
                 Gif.SetBytes(bytes);
                 Gif.StartAnimation();
@@ -47,7 +47,7 @@ namespace AVG_Scale_Installer
             return view;
         }
 
-        private byte[] ConvertByteArray(Stream input)
+        public static byte[] ConvertByteArray(Stream input)
         {
             byte[] buffer = new byte[16 * 1024];
             using (MemoryStream ms = new MemoryStream())

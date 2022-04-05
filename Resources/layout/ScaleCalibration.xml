@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="@color/dark"
+    android:clickable="true"
+    android:id="@+id/ScaleCalibrationLayout"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="false">
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            app:titleTextColor="@color/white"
+            android:id="@+id/ScaleCalibrationToolbar"
+        />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:id="@+id/ScaleCalibrationInfoLayout">
+
+            <android.webkit.WebView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="16dp"
+                android:id="@+id/ScaleCalibrationInfoText"
+            />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+            />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginVertical="16dp"
+                android:background="@drawable/button"
+                android:textColor="@color/white"
+                android:enabled="false"
+                android:text="@string/continue_button"
+                android:id="@+id/ScaleCalibrationInfoContinue"
+            />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:id="@+id/ScaleCalibrationWaitLayout">
+
+            <android.webkit.WebView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="16dp"
+                android:id="@+id/ScaleCalibrationWaitText"
+            />
+
+            <com.felipecsl.gifimageview.library.GifImageView
+                android:layout_width="150dp"
+                android:layout_height="match_parent"
+                android:id="@+id/ScaleCalibrationWaitGif"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+            />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:id="@+id/ScaleCalibrationWeightLayout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_marginVertical="16dp"
+                android:text="@string/scale_calibration_set_known_weight"
+            />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@drawable/input"
+                android:hint="@string/scale_calibration_known_weight_hint"
+                android:textColorHint="#6D717A"
+                android:inputType="number"
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="10dp"
+                android:textSize="16sp"
+                android:maxLength="24"
+                android:textColor="@color/white"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="26dp"
+                android:id="@+id/ScaleCalibrationWeightInput"
+            />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+            />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginVertical="16dp"
+                android:enabled="false"
+                android:background="@drawable/button"
+                android:textColor="@color/white"
+                android:text="@string/continue_button"
+                android:id="@+id/ScaleCalibrationWeightContinue"
+            />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:id="@+id/ScaleCalibrationFinishLayout">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="64dp"
+                android:layout_marginBottom="24dp"
+                android:src="@drawable/finished"
+            />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginVertical="16dp"
+                android:background="@drawable/button"
+                android:textColor="@color/white"
+                android:text="@string/finish"
+                android:id="@+id/ScaleCalibrationFinishButton"
+            />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

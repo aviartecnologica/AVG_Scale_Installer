@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/scale_value"
+        android:paddingHorizontal="8dp"
+        android:layout_marginVertical="16dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:gravity="right"
+            android:minEms="3"
+            android:textSize="56dp"
+            android:fontFamily="@font/digi"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/ScaleValueTextView"
+        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:text="g"
+            android:layout_marginLeft="8dp"
+            android:textSize="24sp"
+        />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="24dp"
+        android:background="@drawable/button"
+        android:textColor="@color/white"
+        android:text="@string/identify_scale"
+        android:enabled="false"
+        android:id="@+id/ScaleIdentifyButton"
+    />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="24dp"
+        android:background="@drawable/button"
+        android:textColor="@color/white"
+        android:text="@string/scale_tare"
+        android:enabled="false"
+        android:id="@+id/ScaleTareButton"
+    />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+    />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="16dp"
+        android:background="@drawable/button"
+        android:textColor="@color/white"
+        android:text="@string/scale_calibrate"
+        android:enabled="false"
+        android:id="@+id/ScaleCalibrateButton"
+    />
+
+</LinearLayout>
